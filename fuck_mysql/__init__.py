@@ -7,6 +7,8 @@ import pickle
 import subprocess
 
 import fastapi
+import fastapi.staticfiles
+import fastapi.templating
 import sqlmodel
 import sqlalchemy.types
 
@@ -23,6 +25,14 @@ from .model import Product      # UGH, FUCK ME
 # NOTE: create_engine(⋯, echo=True) is like "set -x" in bash, it's for debugging.
 engine = sqlmodel.create_engine("sqlite:///delete-me.db", echo=False)
 app = fastapi.FastAPI()
+
+app.mount("/static",
+          fastapi.staticfiles.StaticFiles(
+              directory=importlib.resources.files('fuck_mysql') / 'static'),
+          name="static")
+
+templates = fastapi.templating.Jinja2Templates(
+    directory=importlib.resources.files('fuck_mysql') / "templates")
 
 
 @app.on_event("startup")
@@ -93,4 +103,13 @@ def session():
 
 # https://en.wikipedia.org/wiki/CRUD #######################
 
-
+@app.get('/products/{id}', response_class=fastapi.responses.HTMLResponse)
+async def read_item(request: fastapi.Request, id: int):
+    return templates.TemplateResponse(
+        # NOTE: on newer versions of starlette, it is
+        #          request=request, ⋯
+        #       not
+        #          context={'request': request, ⋯}
+        name='item.html',
+        context={'request': request,
+                 'id': id})
