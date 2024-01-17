@@ -26,7 +26,7 @@ app = fastapi.FastAPI()
 
 
 @app.on_event("startup")
-def on_startup() -> None:
+async def on_startup() -> None:
     sqlmodel.SQLModel.metadata.create_all(engine)
     # If there's AT LEAST 1 row in 1 table,
     # skip import of legacy data.
