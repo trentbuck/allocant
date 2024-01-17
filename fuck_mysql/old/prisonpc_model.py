@@ -1,3 +1,41 @@
+import datetime
+import typing
+import uuid as FUCK_uuid        # workaround weird import errors
+
+import sqlalchemy
+import sqlmodel
+
+def JSON_workaround(nullable=False, *args, **kwargs):
+    """
+    NOTE: sqlmodel doesn't know about JSON by default, so
+          we have to set BOTH the python and sql datatypes.
+          https://stackoverflow.com/questions/70567929/how-to-use-json-columns-with-sqlmodel
+    FIXME: manual sa_column= moves the column to the front of the CREATE TABLE list.
+           1. This causes the database to pack it inefficiently.
+              https://www.2ndquadrant.com/en/blog/on-rocks-and-sand/
+                 if you simply reorder the columns in CREATE TABLE,
+                 you can save ~20% of the space & get faster queries
+           2. It also completely fucks up the sloppy_slurp.py stuff,
+              which assumes the column order has not changed.
+    """
+    return sqlmodel.Field(
+        *args,
+        **kwargs,
+        sa_column=sqlalchemy.Column(
+            sqlalchemy.types.JSON,
+            nullable=False))
+
+
+def TIMESTAMPTZ_workaround(nullable=False, *args, **kwargs):
+    """FUCK YOU: workaround sqlmodel not caring about UTC vs localtime."""
+    return sqlmodel.Field(
+        *args,
+        **kwargs,
+        sa_column=sqlalchemy.Column(
+            sqlalchemy.types.DATETIME(timezone=True),
+            nullable=nullable))
+
+
 class SOE(sqlmodel.SQLModel, table=True):
     name: str = sqlmodel.Field(primary_key=True)
 

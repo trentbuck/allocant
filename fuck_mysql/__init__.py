@@ -1,32 +1,21 @@
 # FIXME: BROKEN: import ipaddress
 # FIXME: BROKEN: import pathlib
 import contextlib
-import datetime
 import importlib.resources
 import logging
 import pickle
 import subprocess
-import typing
 
 import fastapi
 import sqlmodel
 import sqlalchemy.types
 
-
+from .model import Product      # UGH, FUCK ME
 
 
 
 # MODEL ####################################################
 
-class Product(sqlmodel.SQLModel, table=True):
-    productID: typing.Optional[int] = sqlmodel.Field(default=None, primary_key=True)
-    productName: typing.Optional[str]
-    sellPrice: typing.Optional[int]
-    sellPriceCurrencyTypeID: str
-    sellPriceIncTax: bool = sqlmodel.Field(default=False)
-    description: typing.Optional[str]
-    comment: typing.Optional[str]
-    productActive: bool = sqlmodel.Field(default=True)
 
 
 ############################################################
