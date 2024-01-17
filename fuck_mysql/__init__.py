@@ -1,6 +1,7 @@
 # FIXME: BROKEN: import ipaddress
 # FIXME: BROKEN: import pathlib
 import contextlib
+import gettext
 import importlib.resources
 import logging
 import pickle
@@ -33,6 +34,8 @@ app.mount("/static",
 
 templates = fastapi.templating.Jinja2Templates(
     directory=importlib.resources.files('fuck_mysql') / "templates")
+templates.env.add_extension('jinja2.ext.i18n')
+templates.env.install_gettext_callables(gettext.gettext, gettext.ngettext, newstyle=True)
 
 
 @app.on_event("startup")
@@ -103,13 +106,23 @@ def session():
 
 # https://en.wikipedia.org/wiki/CRUD #######################
 
-@app.get('/products/{id}', response_class=fastapi.responses.HTMLResponse)
-async def read_item(request: fastapi.Request, id: int):
+@app.get('/product', response_class=fastapi.responses.HTMLResponse)
+async def read_products(request: fastapi.Request):
     return templates.TemplateResponse(
-        # NOTE: on newer versions of starlette, it is
-        #          request=request, ⋯
-        #       not
-        #          context={'request': request, ⋯}
-        name='item.html',
+        name='product/list.html',
+        context={'request': request})
+
+@app.get("/products")
+async def api_read_products(page: int = 1, q: str = ""):
+    with sqlmodel.Session(engine) as sess:
+        return sess.select(Product).paginate(page=page)
+
+
+@app.get("/products", tags=["Squid Rules"], response_class=fastapi.responses.HTMLResponse)
+async def read_products(request: fastapi.Request, page: int = 1, q: str = ""):
+    return templates.TemplateResponse(
+        name='product/list.html',
         context={'request': request,
-                 'id': id})
+                 'products': await api_read_rules(page=page, q=q),
+                 'page': page,
+                 'q': q})

@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block title %}{{ _("Products") }}{% endblock title %}
+{% block body %}
+<form action="/squid_rules" method="get">
+    <label for="search" class="form-label">{{ _("Search Term") }}</label>
+    <input id="search" type="search" name="q" value="{{ q or '' }}" class="form-control"
+        hx-get="{{ request.url_for('read_rules') }}" hx-trigger="search, keyup delay:200ms changed" hx-target="tbody"
+        hx-select="tbody" hx-swap="outerHTML" hx-push-url="true" />
+    <input type="submit" value="Search" class="btn btn-primary" />
+</form>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>{{ _("URL") }}</th>
+            <th>{{ _("Group Restriction") }}</th>
+            <th>{{ _("Title") }}</th>
+            <th>{{ _("Policy") }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rule in squid_rules %}
+        <tr>
+            <td>{{ rule.url }}</td>
+            <td>{{ rule.group_restriction }}</td>
+            <td>{{ rule.title }}</td>
+            <td>{{ rule.policy }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="4" style="text-align: center">
+                <button class="btn btn-primary"
+                    hx-get="{{ request.url_for('read_rules') }}?q={{ q }}&page={{ page + 1 }}"
+                    hx-target="closest tr"
+                    hx-swap="outerHTML"
+                    hx-select="tbody > tr">{{ _("Load More") }}</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock body %}
