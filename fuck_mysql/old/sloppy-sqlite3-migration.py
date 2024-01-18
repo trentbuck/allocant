@@ -3,6 +3,7 @@ import sqlite3
 
 import MySQLdb
 
+
 def main():
     with (contextlib.closing(MySQLdb.connect(db='alloc')) as conn,
           conn.cursor(MySQLdb.cursors.DictCursor) as src,
@@ -16,7 +17,6 @@ def main():
         (:productID, :productName, :sellPrice,
         :sellPriceCurrencyTypeID, :sellPriceIncTax, :description,
         :comment, :productActive)''', src)
-
 
         for line in dst.iterdump():
             print(line)

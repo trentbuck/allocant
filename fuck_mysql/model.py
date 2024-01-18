@@ -2,6 +2,7 @@ from typing import Optional
 
 from sqlmodel import SQLModel, Field
 
+
 class Product(SQLModel, table=True):
     productID: Optional[int] = Field(default=None, primary_key=True)
     productName: Optional[str]

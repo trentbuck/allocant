@@ -18,7 +18,7 @@ auth_args = {
     'password': alloc_pass,
     'client_version': alloc_client_version,
 }
-r = sess.post(url=alloc_url, # headers=headers, 
+r = sess.post(url=alloc_url,    # headers=headers,
               data=auth_args)
 r.raise_for_status()
 sess_id = r.json()['sessID']

@@ -1,5 +1,3 @@
-# FIXME: BROKEN: import ipaddress
-# FIXME: BROKEN: import pathlib
 import contextlib
 import gettext
 import importlib.resources
@@ -15,11 +13,7 @@ import sqlalchemy.types
 
 from .model import Product      # UGH, FUCK ME
 
-
-
 # MODEL ####################################################
-
-
 
 ############################################################
 
@@ -29,10 +23,14 @@ app = fastapi.FastAPI()
 
 app.mount("/static",
           fastapi.staticfiles.StaticFiles(
+              # FIXME: this is a type error, because
+              #        it only works when the library is unzipped!
               directory=importlib.resources.files('fuck_mysql') / 'static'),
           name="static")
 
 templates = fastapi.templating.Jinja2Templates(
+    # FIXME: this is a type error, because
+    #        it only works when the library is unzipped!
     directory=importlib.resources.files('fuck_mysql') / "templates")
 templates.env.add_extension('jinja2.ext.i18n')
 templates.env.install_gettext_callables(gettext.gettext, gettext.ngettext, newstyle=True)
@@ -106,23 +104,32 @@ def session():
 
 # https://en.wikipedia.org/wiki/CRUD #######################
 
-@app.get('/product', response_class=fastapi.responses.HTMLResponse)
-async def read_products(request: fastapi.Request):
-    return templates.TemplateResponse(
-        name='product/list.html',
-        context={'request': request})
-
-@app.get("/products")
-async def api_read_products(page: int = 1, q: str = ""):
+@app.get('/api/1/products', tags=['products'])
+async def api_read_products(
+        page: int = 0,
+        limit: int = 20,
+        q: str = ''):
     with sqlmodel.Session(engine) as sess:
-        return sess.select(Product).paginate(page=page)
+        return sess.exec(
+            sqlmodel.select(Product)
+            .where(
+                sqlmodel.or_(
+                    Product.productName.ilike(f'%{q}%'),
+                    Product.description.ilike(f'%{q}%'),
+                    Product.comment.ilike(f'%{q}%'))
+                if q else True)
+            .order_by(Product.productID.desc())
+            .limit(limit).offset(page)).all()
 
 
-@app.get("/products", tags=["Squid Rules"], response_class=fastapi.responses.HTMLResponse)
-async def read_products(request: fastapi.Request, page: int = 1, q: str = ""):
+@app.get('/products', tags=['products'], response_class=fastapi.responses.HTMLResponse)
+async def read_products(
+        request: fastapi.Request,
+        page: int = 1,
+        q: str = ''):
     return templates.TemplateResponse(
         name='product/list.html',
         context={'request': request,
-                 'products': await api_read_rules(page=page, q=q),
+                 'products': await api_read_products(page=page, q=q),
                  'page': page,
                  'q': q})

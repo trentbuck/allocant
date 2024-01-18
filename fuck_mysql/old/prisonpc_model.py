@@ -5,6 +5,7 @@ import uuid as FUCK_uuid        # workaround weird import errors
 import sqlalchemy
 import sqlmodel
 
+
 def JSON_workaround(nullable=False, *args, **kwargs):
     """
     NOTE: sqlmodel doesn't know about JSON by default, so
