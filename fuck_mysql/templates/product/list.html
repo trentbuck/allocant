@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}{{ _("Products") }}{% endblock title %}
 {% block body %}
-<form action="{{ request.url_for('read_products') }}" method=get>
+<form action="{{ request.url_for('read_products_html') }}" method=get>
   <label for=search class=form-label>{{ _("Search Term") }}</label>
   <input id=search
          type=search
          name=q
          value="{{ q or '' }}"
          class=form-control
-         hx-get="{{ request.url_for('read_products') }}"
+         hx-get="{{ request.url_for('read_products_html') }}"
          hx-trigger="search, keyup delay:200ms changed"
          hx-target=tbody
          hx-select=tbody
@@ -44,7 +44,7 @@
     <tr>
       <td>
         <button class="btn btn-primary"
-                hx-get="{{ request.url_for('read_products') }}?q={{ q }}&page={{ page + 1 }}"
+                hx-get="{{ request.url_for('read_products_html') }}?q={{ q }}&page={{ page + 1 }}"
                 hx-target="closest tr"
                 hx-swap=outerHTML
                 hx-select="tbody > tr">{{ _("Load More") }}</button>

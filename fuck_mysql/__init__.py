@@ -105,7 +105,7 @@ def session():
 # https://en.wikipedia.org/wiki/CRUD #######################
 
 @app.get('/api/1/products', tags=['products'])
-def api_read_products(
+def read_products_json(
         page: int = 0,
         limit: int = 20,
         q: str = ''):
@@ -123,13 +123,13 @@ def api_read_products(
 
 
 @app.get('/products', tags=['products'], response_class=fastapi.responses.HTMLResponse)
-async def read_products(
+async def read_products_html(
         request: fastapi.Request,
         page: int = 1,
         q: str = ''):
     return templates.TemplateResponse(
         name='product/list.html',
         context={'request': request,
-                 'products': api_read_products(page=page, q=q),
+                 'products': read_products_json(page=page, q=q),
                  'page': page,
                  'q': q})
