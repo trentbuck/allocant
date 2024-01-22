@@ -104,6 +104,13 @@ def session():
 
 # https://en.wikipedia.org/wiki/CRUD #######################
 
+@app.post('/api/1/products/', tags=['products'])
+def create_product_json(product: Product) -> None:
+    with sqlmodel.Session(engine) as sess:
+        sess.add(product)
+        sess.commit()
+
+
 @app.get('/api/1/products', tags=['products'])
 def read_products_json(
         page: int = 0,
