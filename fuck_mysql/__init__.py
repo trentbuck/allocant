@@ -108,7 +108,7 @@ def session():
 def read_products_json(
         page: int = 0,
         limit: int = 20,
-        q: str = ''):
+        q: str = '') -> list[Product]:
     with sqlmodel.Session(engine) as sess:
         return sess.exec(
             sqlmodel.select(Product)
