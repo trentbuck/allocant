@@ -53,6 +53,7 @@ async def on_startup() -> None:
     # doing some fuzzy massaging along the way.
     # FIXME: type declaration is broken.
     # legacy_table2class: list[tuple[str, sqlmodel.SQLModel]]
+    # NOTE: due to FK constraints, have add these tables in the correct order...
     klasses = [
         Product,
     ]
@@ -64,7 +65,6 @@ async def on_startup() -> None:
         input=importlib.resources.read_binary('fuck_mysql', 'sloppy_slurp.py'))
     legacy_data: dict[str, list] = pickle.loads(proc.stdout)
     with session() as sess:
-        # NOTE: due to FK constraints, have add these tables in the correct order...
         for klass in klasses:
             sess.add_all(
                 klass(**legacy_row)
