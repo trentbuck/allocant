@@ -129,6 +129,14 @@ def read_products_json(
             .limit(limit).offset(page)).all()
 
 
+@app.get('/api/1/products/{productID}', tags=['products'])
+def read_product_json(productID: int) -> Product:
+    with sqlmodel.Session(engine) as sess:
+        return sess.exec(
+            sqlmodel.select(Product)
+            .where(Product.productID == productID)).one()
+
+
 @app.get('/products', tags=['products'], response_class=fastapi.responses.HTMLResponse)
 async def read_products_html(
         request: fastapi.Request,
