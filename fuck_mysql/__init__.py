@@ -105,7 +105,7 @@ def session():
 # https://en.wikipedia.org/wiki/CRUD #######################
 
 @app.get('/api/1/products', tags=['products'])
-async def api_read_products(
+def api_read_products(
         page: int = 0,
         limit: int = 20,
         q: str = ''):
@@ -130,6 +130,6 @@ async def read_products(
     return templates.TemplateResponse(
         name='product/list.html',
         context={'request': request,
-                 'products': await api_read_products(page=page, q=q),
+                 'products': api_read_products(page=page, q=q),
                  'page': page,
                  'q': q})
