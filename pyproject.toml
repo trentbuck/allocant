@@ -6,3 +6,7 @@
 #        Trying to set the latter makes ruff crash.
 [tool.ruff]
 line-length = 131
+[project]
+name = "FuckMariaDB"
+requires-python = ">=3.11"
+dynamic = ["version", "description"]
