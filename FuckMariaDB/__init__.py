@@ -1,5 +1,8 @@
+from importlib.resources import files
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from .api import api_router
+from .settings import settings
 
 __version__ = '0'
 __all__ = ['app']
@@ -14,3 +17,18 @@ make new app which provides JUST the interactions that broke (and Ron still need
 
 app = FastAPI()
 app.include_router(api_router)
+
+# FIXME: this is a type error, because
+#        it only works when the library is unzipped!
+if False:
+    app.mount('/static', name='static', app=StaticFiles(
+        directory=files('fuck_mysql') / 'static'))
+# FIXME: this breaks "flit build" because the directory MUST exist at IMPORT time!!
+elif False:
+    app.mount('/static', name='static', app=StaticFiles(
+        directory=('/usr/lib/python3/dist-packages/FuckMariaDB/static'
+                   if settings.in_production else
+                   'FuckMariaDB/static')))
+else:
+    app.mount('/static', name='static', app=StaticFiles(
+        directory='FuckMariaDB/static'))
