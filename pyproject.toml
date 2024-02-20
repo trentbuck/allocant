@@ -8,8 +8,9 @@
 line-length = 131
 [project]
 name = "FuckMariaDB"
+version = "0"
+description = "FIXME: using dynamic=[anything] causes flit build to import models.py twice, triggering this error: sqlalchemy.exc.InvalidRequestError: Table 'product' is already defined for this MetaData instance."
 requires-python = ">=3.11"
-dynamic = ["version", "description"]
 dependencies = [
     "uvicorn >= 0.17.6",
     "fastapi >= 0.92.0",
