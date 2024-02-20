@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from .api import api_router
 
 __version__ = '0'
 __all__ = ['app']
@@ -12,3 +13,4 @@ make new app which provides JUST the interactions that broke (and Ron still need
 
 
 app = FastAPI()
+app.include_router(api_router)
