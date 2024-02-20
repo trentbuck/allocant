@@ -1,3 +1,7 @@
 import uvicorn
 from . import app
-uvicorn.run(app, host='0.0.0.0', port=4380)
+from .settings import settings
+if settings.in_production:
+    uvicorn.run(app, uds='uvicorn.socket')
+else:
+    uvicorn.run('FuckMariaDB:app', reload=True)
