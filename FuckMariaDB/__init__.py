@@ -1,5 +1,6 @@
 from importlib.resources import files
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from .api import api_router
 from .settings import settings
@@ -32,3 +33,8 @@ elif False:
 else:
     app.mount('/static', name='static', app=StaticFiles(
         directory='FuckMariaDB/static'))
+
+
+@app.get('/')
+async def landing_page() -> RedirectResponse:
+    return RedirectResponse('static/index.html')
