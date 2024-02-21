@@ -73,7 +73,11 @@ class SquidRuleCreate(SquidRuleBase):
 
 
 class SquidRuleRead(SquidRuleBase):
-    url: HttpUrl
+    # Currently bugged for existing records, because
+    # by default HttpUrl requires a FDQN for the hostname part, and
+    # some of our existing URLs are like https://webmail/.
+    # url: HttpUrl
+    url: str
     group_restriction: str
 
 
