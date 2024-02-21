@@ -1,9 +1,12 @@
 from fastapi import (
     APIRouter,
+    Depends,
     Form,
 )
 from fastapi.responses import HTMLResponse
+from sqlmodel import Session
 
+from ..api.deps import get_db
 from ..templates import templates
 from ..api.products import (
     create_product,
@@ -30,20 +33,25 @@ router = APIRouter(prefix='/products', tags=['product'])
     response_class=HTMLResponse)
 def create_product_html(
         *,
+        db: Session = Depends(get_db),
         product: ProductCreate = Form(),
 ):                              # FIXME: add return type
     return templates.TemplateResponse(
         name='create_product.html.j2',
-        context={'product': create_product(product=product)})
+        context={'product': create_product(
+            db=db,
+            product=product,)})
 
 
 @router.get(
     '/',
     response_class=HTMLResponse)
-def read_products_html():       # FIXME: add return type
+def read_products_html(
+        db: Session = Depends(get_db),
+):       # FIXME: add return type
     return templates.TemplateResponse(
         name='read_products.html.j2',
-        context={'products': read_products()})
+        context={'products': read_products(db=db)})
 
 
 @router.get(
@@ -51,11 +59,14 @@ def read_products_html():       # FIXME: add return type
     response_class=HTMLResponse)
 def read_product_html(
         *,
+        db: Session = Depends(get_db),
         product_id: int,
 ):                              # FIXME: add return type
     return templates.TemplateResponse(
         name='read_product.html.j2',
-        context={'product': read_product(product_id=product_id)})
+        context={'product': read_product(
+            db=db,
+            product_id=product_id)})
 
 
 @router.put(
@@ -63,12 +74,14 @@ def read_product_html(
     response_class=HTMLResponse)
 def update_product_html(
         *,
+        db: Session = Depends(get_db),
         product_id: int,
         product: ProductUpdate = Form(),
 ):                              # FIXME: add return type
     return templates.TemplateResponse(
         name='update_product.html.j2',
         context={'product': update_product(
+            db=db,
             product_id=product_id,
             product=product)})
 
@@ -78,8 +91,11 @@ def update_product_html(
     response_class=HTMLResponse)
 def delete_product_html(
         *,
+        db: Session = Depends(get_db),
         product_id: int,
 ):                              # FIXME: add return type
     return templates.TemplateResponse(
         name='delete_product.html.j2',
-        context={'product': delete_product(product_id=product_id)})
+        context={'product': delete_product(
+            db=db,
+            product_id=product_id)})
