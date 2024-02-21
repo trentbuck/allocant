@@ -9,6 +9,9 @@
     <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/client-side-templates.js"
             integrity="sha384-UFoZU2py/0EQf37hFN8iBaIC0ojoD9OfXOzMm8uWB16qd6EEQUhhz7cCifKJFsRi"
             crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/json-enc.js"
+            integrity="sha384-nRnAvEUI7N/XvvowiMiq7oEI04gOXMCqD3Bidvedw+YNbj7zTQACPlRI3Jt3vYM4"
+            crossorigin="anonymous"></script>
     <script src="https://unpkg.com/handlebars@4.7.8/dist/handlebars.js"
             integrity="sha384-QUhmvCKocyfe+3p0uc73Hq5wMpUERuIahFAsyHXwZ01QxtaILhVpAYsJLeFnuNhY"
             crossorigin="anonymous"></script>
@@ -30,6 +33,20 @@
       </thead>
       <tbody>
       </tbody>
+      <tfoot>
+        <tr>
+          <form hx-post="/api/v1/products"
+                hx-ext="json-enc,client-side-templates"
+                hx-confirm="Really create new product?"
+                hx-target="previous tbody"
+                hx-swap="beforeend"
+                handlebars-template="product-template">
+            <td><input name="productName" placeholder="Product name" /></td>
+            <td><input name="sellPrice" placeholder="0" type="number" min="0" step="100" /></td>
+            <td><input type="submit" value="Create"></td>
+          </form>
+        </tr>
+      </tfoot>
     </table>
     <template id="products-template">
       {{#each .}}
@@ -47,6 +64,22 @@
         </td>
       </tr>
       {{/each}}
+    </template>
+    <!-- FIXME: DRY: this is the same as products-template without the wrapping #EACH -->
+    <template id="product-template">
+      <tr>
+        <td>{{productName}}</td>
+        <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
+        <td>
+          <button
+            hx-delete="/api/v1/products/{{ productID }}"
+            hx-confirm="Really delete {{ productName }}?"
+            hx-target="closest tr"
+            hx-swap="delete">
+            Delete
+          </button>
+        </td>
+      </tr>
     </template>
   </body>
 </html>
