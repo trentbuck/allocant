@@ -18,10 +18,6 @@
       <tbody>
         {% for product in products %}
         <tr>
-          <td>{{productName}}</td>
-          <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
-        </tr>
-        <tr>
           <td>{{ product.productName }}</td>
           <td>{{ product.sellPrice }} {{sellPriceCurrencyTypeID}}</td>
         </tr>
