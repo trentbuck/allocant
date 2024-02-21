@@ -26,7 +26,7 @@
     <table border="1">
       <caption>All products</caption>
       <thead>
-        <tr><td>Name</td><td>Sell price (in cents!)</td></tr>
+        <tr><td>Name</td><td>Sell price (in cents!)</td><td><!-- Actions --></td></tr>
       </thead>
       <tbody>
       </tbody>
@@ -36,6 +36,15 @@
       <tr>
         <td>{{productName}}</td>
         <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
+        <td>
+          <button
+            hx-delete="/api/v1/products/{{ productID }}"
+            hx-confirm="Really delete {{ productName }}?"
+            hx-target="closest tr"
+            hx-swap="delete">
+            Delete
+          </button>
+        </td>
       </tr>
       {{/each}}
     </template>
