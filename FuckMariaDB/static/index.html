@@ -77,10 +77,10 @@
     <template id="edit-squid_rule-template">
       <tr handlebars-template="squid_rule-template" hx-target="this" hx-swap="outerHTML transition:true">
         <td><input name="title" placeholder="not bookmarked" value="{{title}}"
-                   hx-put="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}" hx-trigger="input changed delay:500ms" hx-swap="none"//></td>
+                   hx-put="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}" hx-trigger="input changed delay:500ms" hx-swap="none" /></td>
         <td>{{url}}</td>  <!-- Cannot be changed because it is the PK -->
         <td><input name="policy" value="{{policy}}"
-                   hx-put="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}" hx-trigger="input changed delay:500ms" hx-swap="none"//></td>
+                   hx-put="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}" hx-trigger="input changed delay:500ms" hx-swap="none" /></td>
         <td>{{group_restriction}}</td>  <!-- Cannot be changed because it is the PK -->
         <td>
           <button hx-get="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}">Done</button>
