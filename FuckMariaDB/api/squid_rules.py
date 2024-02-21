@@ -4,7 +4,7 @@ from fastapi import (
     HTTPException,
     status,
 )
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from pydantic import HttpUrl
 
 from ..api.deps import get_db
@@ -55,7 +55,7 @@ def read_squid_rules(
         *,
         db: Session = Depends(get_db),
 ) -> list[SquidRule]:
-    return db.exec(select(SquidRule)).all()
+    return db.exec(select(SquidRule).order_by(col(SquidRule.url))).all()
 
 
 @router.get(
