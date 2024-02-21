@@ -6,9 +6,39 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"
             integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
             crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/client-side-templates.js"
+            integrity="sha384-UFoZU2py/0EQf37hFN8iBaIC0ojoD9OfXOzMm8uWB16qd6EEQUhhz7cCifKJFsRi"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/handlebars@4.7.8/dist/handlebars.js"
+            integrity="sha384-QUhmvCKocyfe+3p0uc73Hq5wMpUERuIahFAsyHXwZ01QxtaILhVpAYsJLeFnuNhY"
+            crossorigin="anonymous"></script>
   </head>
   <body hx-boost="true">
     <h1>Hello, world!</h1>
     <p>Hello, world!</p>
+    <div hx-ext="client-side-templates">
+      <button hx-get="/api/v1/products"
+              hx-swap="innerHTML"
+              hx-target="#content"
+              handlebars-array-template="products-template">
+        Load All Products
+      </button>
+    </div>
+    <table border="1">
+      <caption>All products</caption>
+      <thead>
+        <tr><td>Name</td><td>Sell price (in cents!)</td></tr>
+      </thead>
+      <tbody id="content">
+      </tbody>
+    </table>
+    <template id="products-template">
+      {{#each .}}
+      <tr>
+        <td>{{productName}}</td>
+        <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
+      </tr>
+      {{/each}}
+    </template>
   </body>
 </html>
