@@ -2,13 +2,13 @@ from logging import debug
 from pathlib import Path
 from .settings import settings
 from .models import __all__ as models
-from .models import Product
+from .models import SquidRule
 from sqlmodel import create_engine, SQLModel, Session
 
 __all__ = ['engine']
 
 if settings.in_production:
-    engine = create_engine('mysql+mysqldb:///alloc')
+    engine = create_engine('postgresql:///prisonpc')
 else:
     # FIXME: With sqlite:/// (in-memory), I get this:
     #        https://github.com/tiangolo/fastapi/discussions/10512
@@ -27,34 +27,18 @@ else:
     SQLModel.metadata.create_all(engine)
     # FIXME: this doesn't belong here.
     with Session(engine) as db:
-        db.add(Product(
-            productID=289,
-            productName='E534120475',
-            sellPrice=590000,
-            sellPriceCurrencyTypeID='AUD',
-            sellPriceIncTax=False,
-            description='Remote management hosting server',
-            comment=('• 64G RAM\n'
-                     '• 2RU rack-mountable profile incl rails\n'
-                     '• GigE NIC\n'
-                     '• IPMI management\n'),
-            productActive=True))
-        db.add(Product(
-            productID=290,
-            productName='FUCKING DELETE ME!',
-            sellPrice=486000,
-            sellPriceCurrencyTypeID='AUD',
-            sellPriceIncTax=False,
-            description='Remote management hosting server integration',
-            comment=None,
-            productActive=False))
-        db.add(Product(
-            productID=292,
-            productName='CFZEZF',
-            sellPrice=100236,
-            sellPriceCurrencyTypeID='AUD',
-            sellPriceIncTax=False,
-            description='Liporem Ipsum Software Maintenance Support Services - Remote Management Server',
-            comment=None,
-            productActive=True))
+        for example_dict in [
+                {"url": "https://fls.org.au/",
+                 "group_restriction": "",
+                 "title": "Fitzroy Legal Service",
+                 "policy": "allow_ro"},
+                {"url": "https://en.wikipedia.org/wiki/Distillation",
+                 "group_restriction": "",
+                 "title": None,
+                 "policy": "deny"},
+                {"url": "https://auth.uq.edu.au/",
+                 "group_restriction": "students-uq",
+                 "title": "University of Queensland",
+                 "policy": "allow_rw"}]:
+            db.add(SquidRule(**example_dict))
         db.commit()

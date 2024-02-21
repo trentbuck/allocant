@@ -22,67 +22,75 @@
         hx-ext="json-enc,client-side-templates">
     <h1>Hello, world!</h1>
     <p>Hello, world!</p>
-    <div hx-get="/api/v1/products"
+    <div hx-get="/api/v1/squid_rules"
          hx-swap="innerHTML"
          hx-target="next tbody"
          hx-trigger="load"
          hx-indicator="next tbody .lds-ring"
-         handlebars-array-template="products-template">
+         handlebars-array-template="squid_rules-template">
     </div>
     <table border="1">
-      <caption>All products</caption>
+      <caption>All squid_rules</caption>
       <thead>
-        <tr><td>Name</td><td>Sell price (in cents!)</td><td><!-- Actions --></td></tr>
+        <tr><td>Title</td><td>URL</td><td>Policy</td><td>Group Restriction</td><td><!-- Actions --></td></tr>
       </thead>
       <tbody>
         <tr><td colspan="3"><div class="htmx-indicator lds-ring"><div></td></tr>
       </tbody>
       <tfoot>
         <tr>
-          <form hx-post="/api/v1/products"
-                hx-confirm="Really create new product?"
+          <form hx-post="/api/v1/squid_rules"
+                hx-confirm="Really create new squid_rule?"
                 hx-target="previous tbody"
                 hx-swap="beforeend transition:true"
-                handlebars-template="product-template">
-            <td><input name="productName" placeholder="Product name" /></td>
-            <td><input name="sellPrice" placeholder="0" type="number" min="0" step="100" /></td>
+                handlebars-template="squid_rule-template">
+            <td><input name="title" placeholder="not bookmarked" /></td>
+            <td><input name="url" placeholder="https://example.com/" /></td>
+            <td><input name="policy" /></td>
+            <td><input name="group_restriction" placeholder="no restriction" /></td>
             <td><input type="submit" value="Create"></td>
           </form>
         </tr>
       </tfoot>
     </table>
-    <template id="products-template">
+    <template id="squid_rules-template">
       {{#each .}}
-      <tr hx-target="this" hx-swap="outerHTML transition:true" handlebars-template="edit-product-template">
-        <td>{{productName}}</td>
-        <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
-        <td><button hx-get="/api/v1/products/{{ productID }}">Edit</button></td>
+      <tr hx-target="this" hx-swap="outerHTML transition:true" handlebars-template="edit-squid_rule-template">
+        <td>{{title}}</td>
+        <td>{{url}}</td>
+        <td>{{policy}}</td>
+        <td>{{group_restriction}}</td>
+        <td><button hx-get="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}">Edit</button></td>
       </tr>
       {{/each}}
     </template>
-    <!-- FIXME: DRY: this is the same as products-template without the wrapping #EACH -->
-    <template id="product-template">
-      <tr hx-target="this" hx-swap="outerHTML transition:true" handlebars-template="edit-product-template">
-        <td>{{productName}}</td>
-        <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
-        <td><button hx-get="/api/v1/products/{{ productID }}">Edit</button></td>
+    <!-- FIXME: DRY: this is the same as squid_rules-template without the wrapping #EACH -->
+    <template id="squid_rule-template">
+      <tr hx-target="this" hx-swap="outerHTML transition:true" handlebars-template="edit-squid_rule-template">
+        <td>{{title}}</td>
+        <td>{{url}}</td>
+        <td>{{policy}}</td>
+        <td>{{group_restriction}}</td>
+        <td><button hx-get="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}">Edit</button></td>
       </tr>
     </template>
-    <template id="edit-product-template">
-      <tr handlebars-template="product-template" hx-target="this" hx-swap="outerHTML transition:true">
-          <td><input name="productName" placeholder="Product name" value="{{ productName }}"
-                     hx-put="/api/v1/products/{{ productID }}" hx-trigger="input changed delay:500ms" hx-swap="none"/></td>
-          <td><input name="sellPrice" placeholder="0" type="number" min="0" step="100" value="{{ sellPrice }}"
-                     hx-put="/api/v1/products/{{ productID }}" hx-trigger="input changed delay:500ms" hx-swap="none" /></td>
-          <td>
-            <button hx-get="/api/v1/products/{{ productID }}">Done</button>
-            <button
-              hx-delete="/api/v1/products/{{ productID }}"
-              hx-confirm="Really delete {{ productName }}?"
-              hx-swap="delete transition:true">
-              Delete
-            </button>
-          </td>
+    <template id="edit-squid_rule-template">
+      <tr handlebars-template="squid_rule-template" hx-target="this" hx-swap="outerHTML transition:true">
+        <td><input name="title" placeholder="not bookmarked" value="{{title}}"
+                   hx-put="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}" hx-trigger="input changed delay:500ms" hx-swap="none"//></td>
+        <td>{{url}}</td>  <!-- Cannot be changed because it is the PK -->
+        <td><input name="policy" value="{{policy}}"
+                   hx-put="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}" hx-trigger="input changed delay:500ms" hx-swap="none"//></td>
+        <td>{{group_restriction}}</td>  <!-- Cannot be changed because it is the PK -->
+        <td>
+          <button hx-get="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}">Done</button>
+          <button
+            hx-delete="/api/v1/squid_rules/{{ group_restriction }}/{{ url }}"
+            hx-confirm="Really delete {{ url }} (for {{group_restriction}})?"
+            hx-swap="delete transition:true">
+            Delete
+          </button>
+        </td>
         <!-- </form> -->
       </tr>
     </template>

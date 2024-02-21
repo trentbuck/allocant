@@ -1,53 +1,88 @@
 from sqlmodel import SQLModel, Field
+from pydantic import HttpUrl
+# from sqlalchemy import Column
+# from sqlalchemy.types import TEXT
 
 __all__ = [
-    'ProductBase',
-    'Product',
-    'ProductCreate',
-    'ProductRead',
-    'ProductUpdate',
-    'ProductDelete',
+    'SquidRuleBase',
+    'SquidRule',
+    'SquidRuleCreate',
+    'SquidRuleRead',
+    'SquidRuleUpdate',
+    'SquidRuleDelete',
 ]
 
 
-class ProductBase(SQLModel):
-    productName: str | None
-    sellPrice: int | None = Field(
-        description='Price in cents (not dollars!)')
-    sellPriceCurrencyTypeID: str = Field(
-        default='AUD',
-        description="MUST be 'AUD'")
-    sellPriceIncTax: bool = Field(
-        default=False,
-        description='MUST be False for new products')
-    description: str | None
-    comment: str | None
-    productActive: bool = Field(default=True)
+class SquidRuleBase(SQLModel):
+    title: str | None = Field(
+        default=None,
+        description='If set, added to end-user bookmark as <a href=url>title</a>.'
+        # FIXME: not working in SQLModel?
+        #        https://fastapi.tiangolo.com/tutorial/schema-extra-example/#extra-json-schema-data-in-pydantic-models
+        # examples=['Fitzroy Law Centre', None]
+    )
+    policy: str = Field(      # FIXME: should probably be a text enum.
+        default='allow_ro',
+        # FIXME: not working in SQLModel?
+        #        https://fastapi.tiangolo.com/tutorial/schema-extra-example/#extra-json-schema-data-in-pydantic-models
+        # examples=['deny_for_now',
+        #           'deny',
+        #           'allow_rw',
+        #           'allow_ro']
+    )
+    # Workaround examples= not working???
+    # UPDATE: no this also fails:
+    #           ValueError: The field model_config has no matching SQLAlchemy type
+    # model_config = {'json_schema_extra': {'examples': [
+    #     {'url': 'https://fls.org.au/',
+    #      'group_restriction': '',
+    #      'title': 'Fitzroy Legal Service',
+    #      'policy': 'allow_ro'},
+    #     {'url': 'https://en.wikipedia.org/wiki/Distillation',
+    #      'group_restriction': '',
+    #      'title': None,
+    #      'policy': 'deny'},
+    #     {'url': 'https://auth.uq.edu.au/',
+    #      'group_restriction': 'students-uq',
+    #      'title': 'University of Queensland',
+    #      'policy': 'allow_rw'}]}}
 
 
-class Product(ProductBase, table=True):
-    'As ProductBase, but add an auto-generated PK'
-    productID: int | None = Field(default=None, primary_key=True)
+class SquidRule(SquidRuleBase, table=True):
+    __tablename__ = 'squid_rules'  # FIXME: legacy backcompat
+    'FIXME: no integer PK, so basically impossible to use typical fastapi style...'
+    url: HttpUrl = Field(
+        primary_key=True,
+        # FIXME: not working in SQLModel?
+        #        https://fastapi.tiangolo.com/tutorial/schema-extra-example/#extra-json-schema-data-in-pydantic-models
+        # examples=['https://example.com/']
+    )
+    group_restriction: str = Field(
+        primary_key=True,
+        description='The empty string (meaning no restriction), or a single(?) group name',
+        default='',
+        # FIXME: not working in SQLModel?
+        #        https://fastapi.tiangolo.com/tutorial/schema-extra-example/#extra-json-schema-data-in-pydantic-models
+        # examples=['', 'p123', 'library', 'bentham-wing']
+    )
 
 
-class ProductCreate(ProductBase):
-    pass
+class SquidRuleCreate(SquidRuleBase):
+    url: HttpUrl
+    group_restriction: str
 
 
-class ProductRead(ProductBase):
-    'As ProductBase, but add mandatory PK'
-    productID: int
+class SquidRuleRead(SquidRuleBase):
+    url: HttpUrl
+    group_restriction: str
 
 
-class ProductUpdate(SQLModel):
-    'As Product, but downgrade all attributes from X|None to X (and no PK)'
-    sellPrice: int | None
-    sellPriceIncTax: bool | None
-    description: str | None
-    comment: str | None
-    productActive: bool | None
+class SquidRuleUpdate(SQLModel):
+    'As SquidRule, but downgrade all attributes from X|None to X (and no PK)'
+    policy: str | None
+    title: str | None
 
 
-class ProductDelete(ProductBase):
+class SquidRuleDelete(SquidRuleBase):
     'UNUSED?'
     pass
