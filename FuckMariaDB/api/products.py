@@ -58,7 +58,7 @@ def read_product(
         product_id: int,
 ) -> Product:
     'Get product by its ID.'
-    product_db = db.get(Product, id)
+    product_db = db.get(Product, product_id)
     if not product_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -75,7 +75,7 @@ def update_product(
         product_id: int,
         product: ProductUpdate
 ) -> Product:
-    product_db = db.get(Product, id)
+    product_db = db.get(Product, product_id)
     if not product_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -99,7 +99,7 @@ def delete_product(
         db: Session = Depends(get_db),
         product_id: int,
 ) -> str:
-    product_db = db.get(Product, id)
+    product_db = db.get(Product, product_id)
     if not product_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
