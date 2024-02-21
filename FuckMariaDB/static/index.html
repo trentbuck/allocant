@@ -16,11 +16,11 @@
             integrity="sha384-QUhmvCKocyfe+3p0uc73Hq5wMpUERuIahFAsyHXwZ01QxtaILhVpAYsJLeFnuNhY"
             crossorigin="anonymous"></script>
   </head>
-  <body hx-boost="true">
+  <body hx-boost="true"
+        hx-ext="json-enc,client-side-templates">
     <h1>Hello, world!</h1>
     <p>Hello, world!</p>
-    <div hx-ext="client-side-templates"
-         hx-get="/api/v1/products"
+    <div hx-get="/api/v1/products"
          hx-swap="innerHTML"
          hx-target="next tbody"
          hx-trigger="load"
@@ -36,7 +36,6 @@
       <tfoot>
         <tr>
           <form hx-post="/api/v1/products"
-                hx-ext="json-enc,client-side-templates"
                 hx-confirm="Really create new product?"
                 hx-target="previous tbody"
                 hx-swap="beforeend"
