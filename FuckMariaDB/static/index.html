@@ -3,6 +3,7 @@
   <head>
     <link rel="icon" href="rose.webp">
     <link rel="stylesheet" href="spinner.css">
+    <link rel="stylesheet" href="view-transitions.css">
     <title>Hello, world!</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"
             integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
@@ -41,7 +42,7 @@
           <form hx-post="/api/v1/products"
                 hx-confirm="Really create new product?"
                 hx-target="previous tbody"
-                hx-swap="beforeend"
+                hx-swap="beforeend transition:true"
                 handlebars-template="product-template">
             <td><input name="productName" placeholder="Product name" /></td>
             <td><input name="sellPrice" placeholder="0" type="number" min="0" step="100" /></td>
@@ -52,7 +53,7 @@
     </table>
     <template id="products-template">
       {{#each .}}
-      <tr hx-target="this" hx-swap="outerHTML" handlebars-template="edit-product-template">
+      <tr hx-target="this" hx-swap="outerHTML transition:true" handlebars-template="edit-product-template">
         <td>{{productName}}</td>
         <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
         <td><button hx-get="/api/v1/products/{{ productID }}">Edit</button></td>
@@ -61,14 +62,14 @@
     </template>
     <!-- FIXME: DRY: this is the same as products-template without the wrapping #EACH -->
     <template id="product-template">
-      <tr hx-target="this" hx-swap="outerHTML" handlebars-template="edit-product-template">
+      <tr hx-target="this" hx-swap="outerHTML transition:true" handlebars-template="edit-product-template">
         <td>{{productName}}</td>
         <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
         <td><button hx-get="/api/v1/products/{{ productID }}">Edit</button></td>
       </tr>
     </template>
     <template id="edit-product-template">
-      <tr handlebars-template="product-template" hx-target="this" hx-swap="outerHTML">
+      <tr handlebars-template="product-template" hx-target="this" hx-swap="outerHTML transition:true">
           <td><input name="productName" placeholder="Product name" value="{{ productName }}"
                      hx-put="/api/v1/products/{{ productID }}" hx-trigger="input changed delay:500ms" hx-swap="none"/></td>
           <td><input name="sellPrice" placeholder="0" type="number" min="0" step="100" value="{{ sellPrice }}"
@@ -78,7 +79,7 @@
             <button
               hx-delete="/api/v1/products/{{ productID }}"
               hx-confirm="Really delete {{ productName }}?"
-              hx-swap="delete">
+              hx-swap="delete transition:true">
               Delete
             </button>
           </td>
