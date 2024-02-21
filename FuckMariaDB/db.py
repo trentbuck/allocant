@@ -2,8 +2,8 @@ from logging import debug
 from pathlib import Path
 from .settings import settings
 from .models import __all__ as models
-
-from sqlmodel import create_engine, SQLModel
+from .models import Product
+from sqlmodel import create_engine, SQLModel, Session
 
 __all__ = ['engine']
 
@@ -25,3 +25,36 @@ else:
           ' sqlmodel.SQLModel.metadata as a side-effect!',
           models)
     SQLModel.metadata.create_all(engine)
+    # FIXME: this doesn't belong here.
+    with Session(engine) as db:
+        db.add(Product(
+            productID=289,
+            productName='E534120475',
+            sellPrice=590000,
+            sellPriceCurrencyTypeID='AUD',
+            sellPriceIncTax=False,
+            description='Remote management hosting server',
+            comment=('• 64G RAM\n'
+                     '• 2RU rack-mountable profile incl rails\n'
+                     '• GigE NIC\n'
+                     '• IPMI management\n'),
+            productActive=True))
+        db.add(Product(
+            productID=290,
+            productName='FUCKING DELETE ME!',
+            sellPrice=486000,
+            sellPriceCurrencyTypeID='AUD',
+            sellPriceIncTax=False,
+            description='Remote management hosting server integration',
+            comment=None,
+            productActive=False))
+        db.add(Product(
+            productID=292,
+            productName='CFZEZF',
+            sellPrice=100236,
+            sellPriceCurrencyTypeID='AUD',
+            sellPriceIncTax=False,
+            description='Liporem Ipsum Software Maintenance Support Services - Remote Management Server',
+            comment=None,
+            productActive=True))
+        db.commit()
