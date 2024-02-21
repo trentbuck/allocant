@@ -49,35 +49,37 @@
     </table>
     <template id="products-template">
       {{#each .}}
-      <tr>
+      <tr hx-target="this" hx-swap="outerHTML" handlebars-template="edit-product-template">
         <td>{{productName}}</td>
         <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
-        <td>
-          <button
-            hx-delete="/api/v1/products/{{ productID }}"
-            hx-confirm="Really delete {{ productName }}?"
-            hx-target="closest tr"
-            hx-swap="delete">
-            Delete
-          </button>
-        </td>
+        <td><button hx-get="/api/v1/products/{{ productID }}">Edit</button></td>
       </tr>
       {{/each}}
     </template>
     <!-- FIXME: DRY: this is the same as products-template without the wrapping #EACH -->
     <template id="product-template">
-      <tr>
+      <tr hx-target="this" hx-swap="outerHTML" handlebars-template="edit-product-template">
         <td>{{productName}}</td>
         <td>{{sellPrice}} {{sellPriceCurrencyTypeID}}</td>
-        <td>
-          <button
-            hx-delete="/api/v1/products/{{ productID }}"
-            hx-confirm="Really delete {{ productName }}?"
-            hx-target="closest tr"
-            hx-swap="delete">
-            Delete
-          </button>
-        </td>
+        <td><button hx-get="/api/v1/products/{{ productID }}">Edit</button></td>
+      </tr>
+    </template>
+    <template id="edit-product-template">
+      <tr handlebars-template="product-template" hx-target="this" hx-swap="outerHTML">
+          <td><input name="productName" placeholder="Product name" value="{{ productName }}"
+                     hx-put="/api/v1/products/{{ productID }}" hx-trigger="input changed delay:500ms" hx-swap="none"/></td>
+          <td><input name="sellPrice" placeholder="0" type="number" min="0" step="100" value="{{ sellPrice }}"
+                     hx-put="/api/v1/products/{{ productID }}" hx-trigger="input changed delay:500ms" hx-swap="none" /></td>
+          <td>
+            <button hx-get="/api/v1/products/{{ productID }}">Done</button>
+            <button
+              hx-delete="/api/v1/products/{{ productID }}"
+              hx-confirm="Really delete {{ productName }}?"
+              hx-swap="delete">
+              Delete
+            </button>
+          </td>
+        <!-- </form> -->
       </tr>
     </template>
   </body>
