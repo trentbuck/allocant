@@ -27,18 +27,16 @@ else:
     SQLModel.metadata.create_all(engine)
     # FIXME: this doesn't belong here.
     with Session(engine) as db:
-        for example_dict in [
-                {"url": "https://fls.org.au/",
-                 "group_restriction": "",
-                 "title": "Fitzroy Legal Service",
-                 "policy": "allow_ro"},
-                {"url": "https://en.wikipedia.org/wiki/Distillation",
-                 "group_restriction": "",
-                 "title": None,
-                 "policy": "deny"},
-                {"url": "https://auth.uq.edu.au/",
-                 "group_restriction": "students-uq",
-                 "title": "University of Queensland",
-                 "policy": "allow_rw"}]:
-            db.add(SquidRule(**example_dict))
+        db.add(SquidRule(url="https://fls.org.au/",
+                         group_restriction="",
+                         title="Fitzroy Legal Service",
+                         policy="allow_ro"))
+        db.add(SquidRule(url="https://en.wikipedia.org/wiki/Distillation",
+                         group_restriction="",
+                         title=None,
+                         policy="deny"))
+        db.add(SquidRule(url="https://auth.uq.edu.au/",
+                         group_restriction="students-uq",
+                         title="University of Queensland",
+                         policy="allow_rw"))
         db.commit()

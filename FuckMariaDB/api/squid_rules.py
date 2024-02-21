@@ -26,7 +26,7 @@ router = APIRouter(prefix='/squid_rules', tags=['squid_rule'],
                    #        "GET /api/v1/squid_rules//https%3A//en.wikipedia.org/wiki/Distillation HTTP/1.1" 404 Not Found
                    # UPDATE: did not help.
                    # redirect_slashes=False,
-)
+                   )
 
 
 @router.post(
