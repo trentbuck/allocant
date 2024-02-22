@@ -90,3 +90,9 @@ class SquidRuleUpdate(SQLModel):
 class SquidRuleDelete(SquidRuleBase):
     'UNUSED?'
     pass
+
+
+class Token(SQLModel):
+    'Used for JWT login/auth stuff.'
+    access_token: str
+    token_type: str = 'bearer'

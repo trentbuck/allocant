@@ -17,4 +17,7 @@ dependencies = [
     "pydantic >= 1.10.4",
     "sqlmodel >= 0.0.8",
     "pytest >= 7.2.1",
+    "jose >= 3.3",
+    "cyptography >= 38",
+
 ]
