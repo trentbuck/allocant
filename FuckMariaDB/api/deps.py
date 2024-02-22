@@ -29,7 +29,7 @@ DbDep = Annotated[Session, Depends(get_db)]
 
 # NOTE: '/login' here matches the ultimate URL for
 #        FuckMariaDB.login.login_access_token.
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl='/login')
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl='/login/')
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
