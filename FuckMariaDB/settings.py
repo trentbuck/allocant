@@ -20,4 +20,5 @@ class Settings(BaseSettings):
     jwt_secret_key: str = token_urlsafe(32)
     jwt_algorithm: str = 'HS256'  # ???
 
+
 settings = Settings()

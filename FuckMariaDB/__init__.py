@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from .api import api_router
+from .login import login_router
 from .settings import settings
 
 __version__ = '0'
@@ -18,6 +19,7 @@ make new app which provides JUST the interactions that broke (and Ron still need
 
 app = FastAPI()
 app.include_router(api_router)
+app.include_router(login_router)  # FIXME: this should become a separate "app".
 
 # FIXME: this is a type error, because
 #        it only works when the library is unzipped!

@@ -1,4 +1,7 @@
+from datetime import datetime, timedelta
+
 from ldap3 import Connection, SAFE_SYNC
+from jose import jwt
 from fastapi import (
     APIRouter,
     Depends,
@@ -6,49 +9,56 @@ from fastapi import (
     status,
 )
 from fastapi.security import OAuth2PasswordRequestForm
+
 from .models import Token
 from .settings import settings
+from .api.deps import get_current_user
 
-router = APIRouter(prefix='/login', tags=['login'])
+__all__ = ['login_router']
+__doc__ = """ Useful text here.
+
+NOTE: Token expiry ('exp') is validated automatically:
+
+          >>> token = jwt.encode({'sub': 'test', 'exp': datetime.utcnow() + timedelta(seconds=3)}, key='bar')
+          >>> jwt.decode(token, key='bar')
+          {'sub': 'test', 'exp': 1708590267}
+          >>> time.sleep(4)
+          >>> jwt.decode(token, key='bar')
+          jose.exceptions.ExpiredSignatureError: Signature has expired.
+"""
+
+login_router = APIRouter(prefix='/login', tags=['login'])
 
 
-@router.post('/')
+@login_router.post('/')
 def login_access_token(
         # db: sqlmodel.Session: fastapi.Depends(get_db),
         form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Token:
-    # NOTE: force lowercase to prevent logging in separately as "Alice" and "alice"?
-    if form_data.username != form_data.username.lower():
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    'Get an opaque proof-I-authenticated token'
     # If we can LDAP bind as user/pw, and
     # then look up our own object, then
     # we have successfully authenticated.
-    dn = f'uid={form_data.username},ou=staff,o=PrisonPC'
     with Connection(
-            server='ldapi:///var/run/slapd/ldapi'
-            user=dn,
+            server='ldapi:///var/run/slapd/ldapi',
+            user=f'uid={form_data.username},ou=staff,o=PrisonPC',
             password=form_data.password,
             client_strategy=SAFE_SYNC,
-            auto_bind=True) as conn:
-        conn.search(search_base=dn,
-                    search_scope='ONE',
-                    attributes=['dn'])
-        expected_uids = {form_data.username}
-        response_uids = {
-                uid
-                for obj in conn.responses
-                for uid in obj['attributes']['uid']}
-        if response_uids == actual_uids:
-            logging.debug('Authentication successful for %s', form_data.username)
-            return Token(access_token=create_access_token(form_data.username))
-        else:
-            logging.debug('Authentication failed for %s', form_data.username)
-    raise HTTPException(status_code=400, detail="Incorrect email or password")
+            auto_bind='NONE') as conn:
+        if conn.bind():
+            print(conn.response, flush=True)
+            # Enforce lowercase ("alice" not "Alice" nor "ALICE").
+            if form_data.username == form_data.username.lower():
+                return Token(access_token=jwt.encode(
+                    {"exp": datetime.utcnow() + timedelta(minutes=60),
+                     "sub": form_data.username},
+                    settings.jwt_secret_key,
+                    algorithm=settings.jwt_algorithm))
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Incorrect email or password")
 
 
-def create_access_token(subject: str) -> str:
-    return jwt.encode(
-        {"exp": datetime.utcnow() + timedelta(minutes=60),
-         "sub": str(subject)},
-        settings.jwt_secret_key,
-        algoritm=jwt_algorithm)
+@login_router.post('/test-token', response_model=str)
+def test_token(current_user: str = Depends(get_current_user)) -> str:
+    return current_user
