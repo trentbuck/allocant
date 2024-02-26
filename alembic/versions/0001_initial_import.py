@@ -1,8 +1,8 @@
-"""empty message
+"""Initial import
 
-Revision ID: 72e5802cb189
+Revision ID: 0001
 Revises: 
-Create Date: 2024-02-26 15:55:41.228213
+Create Date: 2024-02-26 16:50:12.083373
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlmodel                 # CHANGED!
 
 
 # revision identifiers, used by Alembic.
-revision = '72e5802cb189'
+revision = '0001'
 down_revision = None
 branch_labels = None
 depends_on = None
