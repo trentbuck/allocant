@@ -19,6 +19,7 @@
             crossorigin="anonymous"></script>
   </head>
   <body hx-boost="true"
+        hx-on::response-error="alert('An error occured.  FIXME: add better error handling.')"
         hx-ext="json-enc,client-side-templates">
     <h1>Hello, world!</h1>
     <p>Hello, world!</p>
