@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from ldap3 import Connection, SAFE_SYNC
+import ldap3
 from jose import jwt
 from fastapi import (
     APIRouter,
@@ -39,14 +39,14 @@ def login_access_token(
     # If we can LDAP bind as user/pw, and
     # then look up our own object, then
     # we have successfully authenticated.
-    with Connection(
-            server='ldapi:///var/run/slapd/ldapi',
+    with ldap3.Connection(
+            server='ldapi:///run/slapd/ldapi',
+            authentication=ldap3.SIMPLE,
             user=f'uid={form_data.username},ou=staff,o=PrisonPC',
             password=form_data.password,
-            client_strategy=SAFE_SYNC,
-            auto_bind='NONE') as conn:
+            auto_bind=ldap3.AUTO_BIND_NONE) as conn:
         if conn.bind():
-            print(conn.response, flush=True)
+            # LDAP is case-folding, other components are case-sensitive.
             # Enforce lowercase ("alice" not "Alice" nor "ALICE").
             if form_data.username == form_data.username.lower():
                 return Token(access_token=jwt.encode(
