@@ -92,7 +92,7 @@ class SquidRuleDelete(SquidRuleBase):
     pass
 
 
-class Token(SQLModel):
-    'Used for JWT login/auth stuff.'
-    access_token: str
-    token_type: str = 'bearer'
+class HTTPBasicUser(SQLModel):
+    'Used for HTTP Basic authn stuff.'
+    username: str
+    groups: list[str]

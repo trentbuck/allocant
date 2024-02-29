@@ -7,7 +7,7 @@ from fastapi import (
 from sqlmodel import Session, select, col
 from pydantic import HttpUrl
 
-from ..api.deps import get_db
+from ..api.deps import get_db, make_group_validator
 from ..models import (
     SquidRule,
     SquidRuleCreate,
@@ -19,6 +19,7 @@ from ..models import (
 __all__ = ['router']
 
 router = APIRouter(prefix='/squid_rules', tags=['squid_rule'],
+                   dependencies=[Depends(make_group_validator('admin-web'))],
                    # FIXME: fastapi is treating '' as None???
                    #        "GET /api/v1/squid_rules//https%3A//fls.org.au/ HTTP/1.1" 404 Not Found
                    #        "GET /api/v1/squid_rules/students-uq/https%3A//auth.uq.edu.au/ HTTP/1.1" 200 OK
